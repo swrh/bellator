@@ -1,21 +1,15 @@
-pub struct Data {
+pub struct Game {
     name: String,
 }
 
-pub trait Game {
-    fn new() -> Data;
-
-    fn run(&self);
-}
-
-impl Game for Data {
-    fn new() -> Data {
-        Data {
+impl Game {
+    pub fn new() -> Game {
+        Game {
             name: String::from("Foo"),
         }
     }
 
-    fn run(&self) {
+    pub fn run(&self) {
         println!("Hello, {}.", self.name);
         println!("Goodbye, {}.", self.name);
     }
