@@ -2,8 +2,10 @@ mod game;
 
 use crate::game::Game;
 
-fn main() {
-    let game = Game::new();
+fn main() -> Result<(), String> {
+    let game = Game::new()?;
 
     game.run();
+
+    Ok(())
 }
