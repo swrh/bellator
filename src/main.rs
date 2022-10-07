@@ -1,3 +1,4 @@
 fn main() {
-    println!("Hello, world!");
+    let wave: char = '👋';
+    println!("Hello, world! {wave}");
 }
