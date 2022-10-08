@@ -3,6 +3,7 @@ use sdl2;
 use sdl2::event::Event;
 
 pub struct Game {
+    name: &'static str,
     sdl_context: sdl2::Sdl,
 }
 
@@ -11,6 +12,7 @@ impl Game {
         let sdl_context = sdl2::init()?;
 
         Ok(Game {
+            name: "Bellator",
             sdl_context,
         })
     }
@@ -21,7 +23,7 @@ impl Game {
         let video_subsystem = self.sdl_context.video()?;
 
         let _window = video_subsystem
-            .window("SDL2", 640, 480)
+            .window(self.name, 640, 480)
             .position_centered()
             .build()
             .map_err(|e| e.to_string())?;
