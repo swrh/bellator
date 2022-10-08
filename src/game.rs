@@ -1,4 +1,5 @@
 use std::time::Duration;
+use std::time::Instant;
 
 use sdl2::event::Event;
 
@@ -20,8 +21,6 @@ impl Game {
 
         let video_subsystem = sdl_context.video()?;
 
-        let timer = sdl_context.timer()?;
-
         let _window = video_subsystem
             .window(self.name, 640, 480)
             .position_centered()
@@ -30,31 +29,30 @@ impl Game {
 
         let mut event_pump = sdl_context.event_pump()?;
 
-        let update_period = Duration::from_millis(16);
-        let minimum_render_period = Duration::from_millis(16);
-        let maximum_render_period = Duration::from_secs(1);
+        let update_interval = Duration::from_millis(16);
+        let minimum_render_interval = Duration::from_millis(16);
+        let maximum_render_interval = Duration::from_secs(1);
 
-        let offset_tick = Duration::from_millis(timer.ticks().into());
+        let current_time_offset = Instant::now();
+        let mut current_time = Duration::ZERO;
+        let mut last_update = Duration::ZERO;
+        let mut last_render = Duration::ZERO;
 
-        let mut current_tick = Duration::ZERO;
-        let mut last_update_tick = Duration::ZERO;
-        let mut last_render_tick = Duration::ZERO;
-
-        self.update(last_update_tick);
+        self.update(last_update);
         self.render();
 
         'main : loop {
-            let next_render = last_render_tick + minimum_render_period;
-            let next_render_limit = last_render_tick + maximum_render_period;
+            let next_render = last_render + minimum_render_interval;
+            let next_render_limit = last_render + maximum_render_interval;
 
             'event : loop {
-                let timeout = if next_render <= current_tick { Duration::ZERO } else { next_render - current_tick };
+                let timeout = if next_render <= current_time { Duration::ZERO } else { next_render - current_time };
                 let event_option = event_pump.wait_event_timeout(u32::try_from(timeout.as_millis()).unwrap());
-                current_tick = Duration::from_millis(timer.ticks().into()) - offset_tick;
+                current_time = Instant::now() - current_time_offset;
 
-                while (last_update_tick + update_period) <= current_tick {
-                    last_update_tick += update_period;
-                    self.update(last_update_tick);
+                while (last_update + update_interval) <= current_time {
+                    last_update += update_interval;
+                    self.update(last_update);
                 }
 
                 let event = match event_option {
@@ -63,20 +61,20 @@ impl Game {
                     Some(event) => event,
                 };
 
-                self.handle_event(last_update_tick, event);
+                self.handle_event(last_update, event);
 
-                current_tick = Duration::from_millis(timer.ticks().into()) - offset_tick;
-                if current_tick >= next_render_limit {
+                current_time = Instant::now() - current_time_offset;
+                if current_time >= next_render_limit {
                     break;
                 }
             }
 
-            if last_render_tick != last_update_tick {
+            if last_render != last_update {
                 self.render();
-                last_render_tick = last_update_tick;
+                last_render = last_update;
             }
 
-            current_tick = Duration::from_millis(timer.ticks().into()) - offset_tick;
+            current_time = Instant::now() - current_time_offset;
 
         }
 
@@ -85,8 +83,8 @@ impl Game {
         Ok(())
     }
 
-    fn handle_event(&self, last_update_tick: Duration, _event: Event) {
-        println!("handle_event({}, <event>);", last_update_tick.as_millis());
+    fn handle_event(&self, instant: Duration, _event: Event) {
+        println!("handle_event({}, <event>);", instant.as_millis());
     }
 
     fn update(&self, instant: Duration) {
