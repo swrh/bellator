@@ -4,25 +4,23 @@ use sdl2::event::Event;
 
 pub struct Game {
     name: &'static str,
-    sdl_context: sdl2::Sdl,
 }
 
 impl Game {
     pub fn new() -> Result<Game, String> {
-        let sdl_context = sdl2::init()?;
-
         Ok(Game {
             name: "Bellator",
-            sdl_context,
         })
     }
 
     pub fn run(&self) -> Result<(), String> {
         println!("Hello, world!");
 
-        let video_subsystem = self.sdl_context.video()?;
+        let sdl_context = sdl2::init()?;
 
-        let timer = self.sdl_context.timer()?;
+        let video_subsystem = sdl_context.video()?;
+
+        let timer = sdl_context.timer()?;
 
         let _window = video_subsystem
             .window(self.name, 640, 480)
@@ -30,7 +28,7 @@ impl Game {
             .build()
             .map_err(|e| e.to_string())?;
 
-        let mut event_pump = self.sdl_context.event_pump()?;
+        let mut event_pump = sdl_context.event_pump()?;
 
         let update_period = 16;
         let minimum_render_period = 16;
@@ -49,9 +47,9 @@ impl Game {
             let next_render = last_render_tick + minimum_render_period;
             let next_render_limit = last_render_tick + maximum_render_period;
 
-            loop {
+            'event : loop {
                 let timeout = if next_render <= current_tick { 0 } else { next_render - current_tick };
-                let wait_event = event_pump.wait_event_timeout(timeout);
+                let event_option = event_pump.wait_event_timeout(timeout);
                 current_tick = timer.ticks() - offset_tick;
 
                 while (last_update_tick + update_period) <= current_tick {
@@ -59,8 +57,8 @@ impl Game {
                     self.update(last_update_tick);
                 }
 
-                let event = match wait_event {
-                    None => break,
+                let event = match event_option {
+                    None => break 'event,
                     Some(Event::Quit { .. }) => break 'main,
                     Some(event) => event,
                 };
