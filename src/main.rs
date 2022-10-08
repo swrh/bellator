@@ -1,11 +1,7 @@
 mod game;
 
-use crate::game::Game;
+use game::Game;
 
 fn main() -> Result<(), String> {
-    let game = Game::new()?;
-
-    game.run();
-
-    Ok(())
+    Game::new()?.run()
 }
