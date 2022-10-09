@@ -1,4 +1,5 @@
 mod game;
+mod scene;
 
 use game::Game;
 

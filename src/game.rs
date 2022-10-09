@@ -2,16 +2,20 @@ use std::time::Duration;
 use std::time::Instant;
 
 use sdl2::event::Event;
-use sdl2::keyboard::Keycode;
+
+use crate::scene::Scene;
 
 pub struct Game {
     name: &'static str,
+    current_scene: Scene,
 }
 
 impl Game {
     pub fn new() -> Result<Game, String> {
+
         Ok(Game {
             name: "Bellator",
+            current_scene: Scene::new()?,
         })
     }
 
@@ -86,23 +90,25 @@ impl Game {
 
     fn handle_event(&self, instant: Duration, event: Event) {
         match event {
-            Event::KeyDown { repeat: false, keycode: Some(keycode), .. } => self.handle_keydown(instant, keycode),
-            Event::KeyUp { repeat: false, keycode: Some(keycode), .. } => self.handle_keyup(instant, keycode),
+            Event::KeyDown {
+                repeat: false,
+                keycode: Some(keycode),
+                ..
+            } => self.current_scene.handle_keydown(instant, keycode),
+            Event::KeyUp {
+                repeat: false,
+                keycode: Some(keycode),
+                ..
+            } => self.current_scene.handle_keyup(instant, keycode),
             _ => return,
         };
     }
 
-    fn handle_keydown(&self, instant: Duration, keycode: Keycode) {
-        println!("handle_keydown({}, {});", instant.as_millis(), keycode);
-    }
-
-    fn handle_keyup(&self, instant: Duration, keycode: Keycode) {
-        println!("handle_keyup({}, {});", instant.as_millis(), keycode);
-    }
-
-    fn update(&self, _instant: Duration) {
+    fn update(&self, instant: Duration) {
+        self.current_scene.update(instant);
     }
 
     fn render(&self) {
+        self.current_scene.render();
     }
 }
