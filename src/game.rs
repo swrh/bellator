@@ -2,6 +2,7 @@ use std::time::Duration;
 use std::time::Instant;
 
 use sdl2::event::Event;
+use sdl2::keyboard::Keycode;
 
 pub struct Game {
     name: &'static str,
@@ -83,15 +84,25 @@ impl Game {
         Ok(())
     }
 
-    fn handle_event(&self, instant: Duration, _event: Event) {
-        println!("handle_event({}, <event>);", instant.as_millis());
+    fn handle_event(&self, instant: Duration, event: Event) {
+        match event {
+            Event::KeyDown { repeat: false, keycode: Some(keycode), .. } => self.handle_keydown(instant, keycode),
+            Event::KeyUp { repeat: false, keycode: Some(keycode), .. } => self.handle_keyup(instant, keycode),
+            _ => return,
+        };
     }
 
-    fn update(&self, instant: Duration) {
-        println!("update({});", instant.as_millis());
+    fn handle_keydown(&self, instant: Duration, keycode: Keycode) {
+        println!("handle_keydown({}, {});", instant.as_millis(), keycode);
+    }
+
+    fn handle_keyup(&self, instant: Duration, keycode: Keycode) {
+        println!("handle_keyup({}, {});", instant.as_millis(), keycode);
+    }
+
+    fn update(&self, _instant: Duration) {
     }
 
     fn render(&self) {
-        println!("render();");
     }
 }
