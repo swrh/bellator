@@ -94,12 +94,12 @@ impl Game {
                 repeat: false,
                 keycode: Some(keycode),
                 ..
-            } => self.current_scene.handle_keydown(instant, keycode),
+            } => self.current_scene.handle_key(instant, keycode, true),
             Event::KeyUp {
                 repeat: false,
                 keycode: Some(keycode),
                 ..
-            } => self.current_scene.handle_keyup(instant, keycode),
+            } => self.current_scene.handle_key(instant, keycode, false),
             _ => return,
         };
     }

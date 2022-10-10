@@ -1,5 +1,6 @@
 mod entity;
 mod game;
+mod player;
 mod scene;
 
 use game::Game;
