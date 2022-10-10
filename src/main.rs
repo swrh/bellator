@@ -3,8 +3,6 @@ mod game;
 mod player;
 mod scene;
 
-use game::Game;
-
 fn main() -> Result<(), String> {
-    Game::new()?.run()
+    game::Game::new()?.run()
 }
