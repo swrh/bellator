@@ -24,7 +24,7 @@ impl Scene {
         })
     }
 
-    pub fn handle_key(&self, instant: Duration, keycode: Keycode, down: bool) {
+    pub fn handle_key(&mut self, instant: Duration, keycode: Keycode, down: bool) {
         //println!("handle_key({}, {}, {});", instant.as_millis(), keycode, down);
         match keycode {
             Keycode::A | Keycode::Left => self.player.handle_key_left(instant, down),
@@ -35,8 +35,8 @@ impl Scene {
         }
     }
 
-    pub fn update(&self, instant: Duration) {
-        for e in &self.entities {
+    pub fn update(&mut self, instant: Duration) {
+        for e in &mut self.entities {
             e.update(instant);
         }
 

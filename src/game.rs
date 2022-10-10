@@ -103,7 +103,7 @@ impl Game {
         Ok(())
     }
 
-    fn handle_event(&self, instant: Duration, event: Event) {
+    fn handle_event(&mut self, instant: Duration, event: Event) {
         match event {
             Event::KeyDown {
                 repeat: false,
@@ -119,7 +119,7 @@ impl Game {
         };
     }
 
-    fn update(&self, instant: Duration) {
+    fn update(&mut self, instant: Duration) {
         self.current_scene.update(instant);
     }
 
