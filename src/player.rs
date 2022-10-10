@@ -9,7 +9,7 @@ use sdl2::video::Window;
 use crate::entity::Entity;
 
 pub struct Player {
-    points: [Point; 3],
+    points: [Point; 4],
     lines: Vec<Point>,
     theta: f64,
     position: Point,
@@ -21,9 +21,10 @@ pub struct Player {
 impl Player {
     pub fn new() -> Result<Player, String> {
         let points = [
-            Point::new(0, -50),
-            Point::new(-25, 25),
-            Point::new(25, 25),
+            Point::new(0, -20),
+            Point::new(-10, 10),
+            Point::new(0, 5),
+            Point::new(10, 10),
         ];
 
         let mut lines = Vec::new();
@@ -90,7 +91,7 @@ impl Entity for Player {
         }
         self.lines.push(self.lines[0]);
 
-        canvas.set_draw_color(Color::RGB(255, 0, 0));
+        canvas.set_draw_color(Color::RGB(255, 255, 255));
         canvas.draw_lines(&self.lines[..]).unwrap();
     }
 }
