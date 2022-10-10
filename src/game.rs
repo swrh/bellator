@@ -49,8 +49,8 @@ impl Game {
 
         let mut event_pump = self.sdl_context.event_pump()?;
 
-        let update_interval = Duration::from_millis(16);
-        let minimum_render_interval = Duration::from_millis(16);
+        let update_interval = Duration::from_millis(10);
+        let minimum_render_interval = Duration::from_millis(10);
         let maximum_render_interval = Duration::from_secs(1);
 
         let current_time_offset = Instant::now();
