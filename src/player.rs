@@ -15,6 +15,7 @@ pub struct Player {
     position: Point,
     left: bool,
     right: bool,
+    last_update: Duration,
 }
 
 impl Player {
@@ -39,6 +40,7 @@ impl Player {
             position,
             left: false,
             right: false,
+            last_update: Duration::ZERO,
         })
     }
 
@@ -62,14 +64,18 @@ impl Player {
 }
 
 impl Entity for Player {
-    fn update(&mut self, _instant: Duration) {
+    fn update(&mut self, instant: Duration) {
+        let delta = instant - self.last_update;
+
         if self.left != self.right {
-            let mut shift = 0.01 * PI;
+            let mut shift = PI * 0.001 * delta.as_millis() as f64;
             if self.left {
                 shift *= -1.0;
             }
             self.theta += shift;
         }
+
+        self.last_update = instant;
     }
 
     fn render(&mut self, canvas: &mut Canvas<Window>) {
