@@ -1,6 +1,8 @@
 use std::time::Duration;
 
 use sdl2::keyboard::Keycode;
+use sdl2::render::Canvas;
+use sdl2::video::Window;
 
 use crate::entity::Entity;
 use crate::player::Player;
@@ -41,11 +43,11 @@ impl Scene {
         self.player.update(instant);
     }
 
-    pub fn render(&self) {
+    pub fn render(&self, canvas: &mut Canvas<Window>) {
         for e in &self.entities {
-            e.render();
+            e.render(canvas);
         }
 
-        self.player.render();
+        self.player.render(canvas);
     }
 }

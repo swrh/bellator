@@ -3,6 +3,7 @@ use std::time::Instant;
 
 use sdl2::Sdl;
 use sdl2::event::Event;
+use sdl2::pixels::Color;
 use sdl2::render::Canvas;
 use sdl2::video::Window;
 
@@ -28,13 +29,11 @@ impl Game {
             .build()
             .map_err(|e| e.to_string())?;
 
-        let mut canvas = window
+        let canvas = window
             .into_canvas()
             .accelerated()
             .build()
             .map_err(|e| e.to_string())?;
-
-        canvas.set_draw_color(sdl2::pixels::Color::RGBA(0, 0, 0, 255));
 
         let current_scene = Scene::new()?;
 
@@ -125,8 +124,9 @@ impl Game {
     }
 
     fn render(&mut self) {
+        self.canvas.set_draw_color(Color::RGB(0, 0, 0));
         self.canvas.clear();
-        self.current_scene.render();
+        self.current_scene.render(&mut self.canvas);
         self.canvas.present();
     }
 }
