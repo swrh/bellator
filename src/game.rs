@@ -1,38 +1,54 @@
 use std::time::Duration;
 use std::time::Instant;
 
+use sdl2::Sdl;
 use sdl2::event::Event;
+use sdl2::render::Canvas;
+use sdl2::video::Window;
 
 use crate::scene::Scene;
 
 pub struct Game {
-    name: &'static str,
+    sdl_context: Sdl,
+    canvas: Canvas<Window>,
     current_scene: Scene,
 }
 
 impl Game {
     pub fn new() -> Result<Game, String> {
-
-        Ok(Game {
-            name: "Bellator",
-            current_scene: Scene::new()?,
-        })
-    }
-
-    pub fn run(&self) -> Result<(), String> {
-        println!("Hello, world!");
+        let name = "Bellator";
 
         let sdl_context = sdl2::init()?;
 
         let video_subsystem = sdl_context.video()?;
 
-        let _window = video_subsystem
-            .window(self.name, 640, 480)
+        let window = video_subsystem
+            .window(name, 640, 480)
             .position_centered()
             .build()
             .map_err(|e| e.to_string())?;
 
-        let mut event_pump = sdl_context.event_pump()?;
+        let mut canvas = window
+            .into_canvas()
+            .accelerated()
+            .build()
+            .map_err(|e| e.to_string())?;
+
+        canvas.set_draw_color(sdl2::pixels::Color::RGBA(0, 0, 0, 255));
+
+        let current_scene = Scene::new()?;
+
+        Ok(Game {
+            sdl_context,
+            canvas,
+            current_scene,
+        })
+    }
+
+    pub fn run(&mut self) -> Result<(), String> {
+        println!("Hello, world!");
+
+        let mut event_pump = self.sdl_context.event_pump()?;
 
         let update_interval = Duration::from_millis(16);
         let minimum_render_interval = Duration::from_millis(16);
@@ -108,7 +124,9 @@ impl Game {
         self.current_scene.update(instant);
     }
 
-    fn render(&self) {
+    fn render(&mut self) {
+        self.canvas.clear();
         self.current_scene.render();
+        self.canvas.present();
     }
 }
