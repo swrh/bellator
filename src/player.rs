@@ -8,11 +8,20 @@ use sdl2::video::Window;
 use crate::entity::Entity;
 
 pub struct Player {
+    lines: [Point; 4],
 }
 
 impl Player {
     pub fn new() -> Result<Player, String> {
+        let lines = [
+            Point::new(5, 0),
+            Point::new(10, 15),
+            Point::new(0, 15),
+            Point::new(5, 0),
+        ];
+
         Ok(Player {
+            lines,
         })
     }
 
@@ -39,6 +48,6 @@ impl Entity for Player {
 
     fn render(&self, canvas: &mut Canvas<Window>) {
         canvas.set_draw_color(Color::RGB(255, 0, 0));
-        canvas.draw_line(Point::new(0, 0), Point::new(10, 10)).unwrap();
+        canvas.draw_lines(&self.lines[..]).unwrap();
     }
 }
