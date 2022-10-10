@@ -10,6 +10,7 @@ use crate::entity::Entity;
 
 pub struct Player {
     points: [Point; 3],
+    lines: Vec<Point>,
     theta: f64,
     position: Point,
     left: bool,
@@ -24,12 +25,16 @@ impl Player {
             Point::new(25, 25),
         ];
 
+        let mut lines = Vec::new();
+        lines.reserve_exact(points.len() + 1);
+
         let theta: f64 = 0.0;
 
         let position = Point::new(100, 100);
 
         Ok(Player {
             points,
+            lines,
             theta,
             position,
             left: false,
@@ -67,20 +72,19 @@ impl Entity for Player {
         }
     }
 
-    fn render(&self, canvas: &mut Canvas<Window>) {
-        let mut lines = Vec::new();
+    fn render(&mut self, canvas: &mut Canvas<Window>) {
         let cos_theta = (self.theta * PI).cos();
         let sin_theta = (self.theta * PI).sin();
-        lines.reserve_exact(self.points.len() + 1);
+        self.lines.clear();
         for point in self.points {
-            lines.push(Point::new(
+            self.lines.push(Point::new(
                 ((point.x as f64 * cos_theta) - (point.y as f64 * sin_theta)) as i32 + self.position.x,
                 ((point.x as f64 * sin_theta) + (point.y as f64 * cos_theta)) as i32 + self.position.y,
             ));
         }
-        lines.push(lines[0]);
+        self.lines.push(self.lines[0]);
 
         canvas.set_draw_color(Color::RGB(255, 0, 0));
-        canvas.draw_lines(&lines[..]).unwrap();
+        canvas.draw_lines(&self.lines[..]).unwrap();
     }
 }

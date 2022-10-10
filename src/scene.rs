@@ -43,8 +43,8 @@ impl Scene {
         self.player.update(instant);
     }
 
-    pub fn render(&self, canvas: &mut Canvas<Window>) {
-        for e in &self.entities {
+    pub fn render(&mut self, canvas: &mut Canvas<Window>) {
+        for e in &mut self.entities {
             e.render(canvas);
         }
 

@@ -5,5 +5,5 @@ use sdl2::video::Window;
 
 pub trait Entity {
     fn update(&mut self, instant: Duration);
-    fn render(&self, canvas: &mut Canvas<Window>);
+    fn render(&mut self, canvas: &mut Canvas<Window>);
 }
