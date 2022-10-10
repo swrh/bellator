@@ -7,12 +7,13 @@ use sdl2::render::Canvas;
 use sdl2::video::Window;
 
 use crate::entity::Entity;
+use crate::point2f::Point2f;
 
 pub struct Player {
-    points: [Point; 4],
+    points: [Point2f; 4],
     lines: Vec<Point>,
     theta: f64,
-    position: Point,
+    position: Point2f,
     left: bool,
     right: bool,
     last_update: Duration,
@@ -21,10 +22,10 @@ pub struct Player {
 impl Player {
     pub fn new() -> Result<Player, String> {
         let points = [
-            Point::new(0, -20),
-            Point::new(-10, 10),
-            Point::new(0, 5),
-            Point::new(10, 10),
+            Point2f { x: 0.0, y: -20.0, },
+            Point2f { x: -10.0, y: 10.0, },
+            Point2f { x: 0.0, y: 5.0, },
+            Point2f { x: 10.0, y: 10.0, },
         ];
 
         let mut lines = Vec::new();
@@ -32,7 +33,7 @@ impl Player {
 
         let theta: f64 = 0.0;
 
-        let position = Point::new(100, 100);
+        let position = Point2f { x: 100.0, y: 100.0, };
 
         Ok(Player {
             points,
@@ -69,11 +70,12 @@ impl Entity for Player {
         let delta = instant - self.last_update;
 
         if self.left != self.right {
-            let mut shift = PI * 0.001 * delta.as_millis() as f64;
+            let shift = PI * 0.001 * delta.as_millis() as f64;
             if self.left {
-                shift *= -1.0;
+                self.theta -= shift;
+            } else {
+                self.theta += shift;
             }
-            self.theta += shift;
         }
 
         self.last_update = instant;
@@ -83,10 +85,10 @@ impl Entity for Player {
         let cos_theta = self.theta.cos();
         let sin_theta = self.theta.sin();
         self.lines.clear();
-        for point in self.points {
+        for point in &self.points {
             self.lines.push(Point::new(
-                ((point.x as f64 * cos_theta) - (point.y as f64 * sin_theta)) as i32 + self.position.x,
-                ((point.x as f64 * sin_theta) + (point.y as f64 * cos_theta)) as i32 + self.position.y,
+                (point.x * cos_theta - point.y * sin_theta + self.position.x) as i32,
+                (point.x * sin_theta + point.y * cos_theta + self.position.y) as i32,
             ));
         }
         self.lines.push(self.lines[0]);
