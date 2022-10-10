@@ -64,7 +64,7 @@ impl Player {
 impl Entity for Player {
     fn update(&mut self, _instant: Duration) {
         if self.left != self.right {
-            let mut shift = 0.01;
+            let mut shift = 0.01 * PI;
             if self.left {
                 shift *= -1.0;
             }
@@ -73,8 +73,8 @@ impl Entity for Player {
     }
 
     fn render(&mut self, canvas: &mut Canvas<Window>) {
-        let cos_theta = (self.theta * PI).cos();
-        let sin_theta = (self.theta * PI).sin();
+        let cos_theta = self.theta.cos();
+        let sin_theta = self.theta.sin();
         self.lines.clear();
         for point in self.points {
             self.lines.push(Point::new(
