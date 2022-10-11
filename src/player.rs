@@ -1,7 +1,6 @@
 use std::f64::consts::PI;
 use std::time::Duration;
 
-use sdl2::pixels::Color;
 use sdl2::rect::Point;
 use sdl2::render::Canvas;
 use sdl2::video::Window;
@@ -104,8 +103,6 @@ impl Entity for Player {
     }
 
     fn render(&mut self, canvas: &mut Canvas<Window>) {
-        canvas.set_draw_color(Color::RGB(255, 255, 255));
-
         let cos_theta = self.theta.cos();
         let sin_theta = self.theta.sin();
 

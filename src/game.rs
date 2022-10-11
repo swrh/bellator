@@ -126,6 +126,7 @@ impl Game {
     fn render(&mut self) {
         self.canvas.set_draw_color(Color::RGB(0, 0, 0));
         self.canvas.clear();
+        self.canvas.set_draw_color(Color::RGB(255, 255, 255));
         self.current_scene.render(&mut self.canvas);
         self.canvas.present();
     }
