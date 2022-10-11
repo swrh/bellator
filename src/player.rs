@@ -79,8 +79,8 @@ impl Player {
 }
 
 impl Entity for Player {
-    fn update(&mut self, instant: Duration) {
-        let millis = (instant - self.last_update).as_millis() as f64;
+    fn update(&mut self, instant: Duration, delta: Duration) {
+        let millis = delta.as_millis() as f64;
 
         if self.left != self.right {
             let shift = PI * 0.001 * millis;

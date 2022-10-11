@@ -58,7 +58,7 @@ impl Game {
         let mut last_update = Duration::ZERO;
         let mut last_render = Duration::ZERO;
 
-        self.update(last_update);
+        self.update(last_update, Duration::ZERO);
         self.render();
 
         'main : loop {
@@ -72,7 +72,7 @@ impl Game {
 
                 while (last_update + update_interval) <= current_time {
                     last_update += update_interval;
-                    self.update(last_update);
+                    self.update(last_update, update_interval);
                 }
 
                 let event = match event_option {
@@ -119,8 +119,8 @@ impl Game {
         };
     }
 
-    fn update(&mut self, instant: Duration) {
-        self.current_scene.update(instant);
+    fn update(&mut self, instant: Duration, delta: Duration) {
+        self.current_scene.update(instant, delta);
     }
 
     fn render(&mut self) {

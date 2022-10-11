@@ -35,12 +35,12 @@ impl Scene {
         }
     }
 
-    pub fn update(&mut self, instant: Duration) {
+    pub fn update(&mut self, instant: Duration, delta: Duration) {
         for e in &mut self.entities {
-            e.update(instant);
+            e.update(instant, delta);
         }
 
-        self.player.update(instant);
+        self.player.update(instant, delta);
     }
 
     pub fn render(&mut self, canvas: &mut Canvas<Window>) {
