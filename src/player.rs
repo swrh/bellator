@@ -1,3 +1,4 @@
+use std::collections::VecDeque;
 use std::f64::consts::PI;
 use std::time::Duration;
 
@@ -7,6 +8,47 @@ use sdl2::video::Window;
 
 use crate::entity::Entity;
 use crate::point2f::Point2f;
+
+struct Bullet {
+    instant: Duration,
+    line: [Point2f; 2],
+    theta: f64,
+}
+
+impl Bullet {
+    pub fn new(instant: Duration, position: &Point2f, theta: f64) -> Bullet {
+        let line = [
+            Point2f { x: position.x, y: position.y, },
+            Point2f { x: position.x + theta.sin() * 5.0, y: position.y - theta.cos() * 5.0, },
+        ];
+
+        Bullet {
+            instant,
+            line,
+            theta,
+        }
+    }
+}
+
+impl Entity for Bullet {
+    fn update(&mut self, _instant: Duration, delta: Duration) {
+        let millis = delta.as_millis() as f64;
+
+        for line in &mut self.line {
+            line.x += self.theta.sin() * 0.5 * millis;
+            line.y -= self.theta.cos() * 0.5 * millis;
+        }
+    }
+
+    fn render(&mut self, canvas: &mut Canvas<Window>) {
+        let line = [
+            Point::new(self.line[0].x as i32, self.line[0].y as i32),
+            Point::new(self.line[1].x as i32, self.line[1].y as i32),
+        ];
+
+        canvas.draw_lines(&line[..]).unwrap();
+    }
+}
 
 pub struct Player {
     ship_points: [Point2f; 4],
@@ -19,7 +61,8 @@ pub struct Player {
     left: bool,
     right: bool,
     up: bool,
-    last_update: Duration,
+    space: bool,
+    bullets: VecDeque<Bullet>,
 }
 
 impl Player {
@@ -58,7 +101,8 @@ impl Player {
             left: false,
             right: false,
             up: false,
-            last_update: Duration::ZERO,
+            space: false,
+            bullets: VecDeque::new(),
         })
     }
 
@@ -75,6 +119,15 @@ impl Player {
     }
 
     pub fn handle_key_down(&mut self, _instant: Duration, _down: bool) {
+    }
+
+    pub fn handle_key_space(&mut self, instant: Duration, down: bool) {
+        if self.space && !down {
+            let weapon_position = &self.position; // FIXME wrong position: should be the edge of
+                                                  // the ship, and not its center
+            self.bullets.push_back(Bullet::new(instant, &weapon_position, self.theta));
+        }
+        self.space = down;
     }
 }
 
@@ -99,7 +152,13 @@ impl Entity for Player {
         self.position.x += self.velocity.x * 0.1 * millis;
         self.position.y += self.velocity.y * 0.1 * millis;
 
-        self.last_update = instant;
+        while self.bullets.len() > 0 && (instant - self.bullets.front().unwrap().instant) > Duration::from_secs(5) {
+            self.bullets.pop_front();
+        }
+
+        for bullet in &mut self.bullets {
+            bullet.update(instant, delta);
+        }
     }
 
     fn render(&mut self, canvas: &mut Canvas<Window>) {
@@ -125,6 +184,10 @@ impl Entity for Player {
                 ));
             }
             canvas.draw_lines(&self.fire_lines[..]).unwrap();
+        }
+
+        for bullet in &mut self.bullets {
+            bullet.render(canvas);
         }
     }
 }

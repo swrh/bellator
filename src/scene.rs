@@ -31,6 +31,7 @@ impl Scene {
             Keycode::D | Keycode::Right => self.player.handle_key_right(instant, down),
             Keycode::W | Keycode::Up => self.player.handle_key_up(instant, down),
             Keycode::S | Keycode::Down => self.player.handle_key_down(instant, down),
+            Keycode::Space => self.player.handle_key_space(instant, down),
             _ => {},
         }
     }
