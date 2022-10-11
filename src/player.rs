@@ -14,8 +14,10 @@ pub struct Player {
     lines: Vec<Point>,
     theta: f64,
     position: Point2f,
+    velocity: Point2f,
     left: bool,
     right: bool,
+    up: bool,
     last_update: Duration,
 }
 
@@ -40,43 +42,50 @@ impl Player {
             lines,
             theta,
             position,
+            velocity: Point2f { x: 0.0, y: 0.0, },
             left: false,
             right: false,
+            up: false,
             last_update: Duration::ZERO,
         })
     }
 
-    pub fn handle_key_left(&mut self, instant: Duration, down: bool) {
-        println!("handle_key_left({}, {});", instant.as_millis(), down);
+    pub fn handle_key_left(&mut self, _instant: Duration, down: bool) {
         self.left = down;
     }
 
-    pub fn handle_key_right(&mut self, instant: Duration, down: bool) {
-        println!("handle_key_right({}, {});", instant.as_millis(), down);
+    pub fn handle_key_right(&mut self, _instant: Duration, down: bool) {
         self.right = down;
     }
 
-    pub fn handle_key_up(&mut self, instant: Duration, down: bool) {
-        println!("handle_key_up({}, {});", instant.as_millis(), down);
+    pub fn handle_key_up(&mut self, _instant: Duration, down: bool) {
+        self.up = down;
     }
 
-    pub fn handle_key_down(&mut self, instant: Duration, down: bool) {
-        println!("handle_key_down({}, {});", instant.as_millis(), down);
+    pub fn handle_key_down(&mut self, _instant: Duration, _down: bool) {
     }
 }
 
 impl Entity for Player {
     fn update(&mut self, instant: Duration) {
-        let delta = instant - self.last_update;
+        let millis = (instant - self.last_update).as_millis() as f64;
 
         if self.left != self.right {
-            let shift = PI * 0.001 * delta.as_millis() as f64;
+            let shift = PI * 0.001 * millis;
             if self.left {
                 self.theta -= shift;
             } else {
                 self.theta += shift;
             }
         }
+
+        if self.up {
+            self.velocity.x += self.theta.sin() * 0.001 * millis;
+            self.velocity.y -= self.theta.cos() * 0.001 * millis;
+        }
+
+        self.position.x += self.velocity.x * 0.1 * millis;
+        self.position.y += self.velocity.y * 0.1 * millis;
 
         self.last_update = instant;
     }
