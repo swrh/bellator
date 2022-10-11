@@ -10,8 +10,10 @@ use crate::entity::Entity;
 use crate::point2f::Point2f;
 
 pub struct Player {
-    points: [Point2f; 4],
-    lines: Vec<Point>,
+    ship_points: [Point2f; 4],
+    ship_lines: Vec<Point>,
+    fire_points: [Point2f; 3],
+    fire_lines: Vec<Point>,
     theta: f64,
     position: Point2f,
     velocity: Point2f,
@@ -23,23 +25,34 @@ pub struct Player {
 
 impl Player {
     pub fn new() -> Result<Player, String> {
-        let points = [
+        let ship_points = [
             Point2f { x: 0.0, y: -20.0, },
             Point2f { x: -10.0, y: 10.0, },
             Point2f { x: 0.0, y: 5.0, },
             Point2f { x: 10.0, y: 10.0, },
         ];
 
-        let mut lines = Vec::new();
-        lines.reserve_exact(points.len() + 1);
+        let mut ship_lines = Vec::new();
+        ship_lines.reserve_exact(ship_points.len() + 1);
+
+        let fire_points = [
+            Point2f { x: -5.0, y: 7.5, },
+            Point2f { x: 0.0, y: 17.5, },
+            Point2f { x: 5.0, y: 7.5, },
+        ];
+
+        let mut fire_lines = Vec::new();
+        fire_lines.reserve_exact(fire_points.len());
 
         let theta: f64 = 0.0;
 
         let position = Point2f { x: 100.0, y: 100.0, };
 
         Ok(Player {
-            points,
-            lines,
+            ship_points,
+            ship_lines,
+            fire_points,
+            fire_lines,
             theta,
             position,
             velocity: Point2f { x: 0.0, y: 0.0, },
@@ -91,18 +104,30 @@ impl Entity for Player {
     }
 
     fn render(&mut self, canvas: &mut Canvas<Window>) {
+        canvas.set_draw_color(Color::RGB(255, 255, 255));
+
         let cos_theta = self.theta.cos();
         let sin_theta = self.theta.sin();
-        self.lines.clear();
-        for point in &self.points {
-            self.lines.push(Point::new(
+
+        self.ship_lines.clear();
+        for point in &self.ship_points {
+            self.ship_lines.push(Point::new(
                 (point.x * cos_theta - point.y * sin_theta + self.position.x) as i32,
                 (point.x * sin_theta + point.y * cos_theta + self.position.y) as i32,
             ));
         }
-        self.lines.push(self.lines[0]);
+        self.ship_lines.push(self.ship_lines[0]);
+        canvas.draw_lines(&self.ship_lines[..]).unwrap();
 
-        canvas.set_draw_color(Color::RGB(255, 255, 255));
-        canvas.draw_lines(&self.lines[..]).unwrap();
+        if self.up {
+            self.fire_lines.clear();
+            for point in &self.fire_points {
+                self.fire_lines.push(Point::new(
+                    (point.x * cos_theta - point.y * sin_theta + self.position.x) as i32,
+                    (point.x * sin_theta + point.y * cos_theta + self.position.y) as i32,
+                ));
+            }
+            canvas.draw_lines(&self.fire_lines[..]).unwrap();
+        }
     }
 }
