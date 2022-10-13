@@ -42,8 +42,8 @@ impl Entity for Bullet {
 
     fn render(&mut self, canvas: &mut Canvas<Window>) {
         let line = [
-            Point::new(self.line[0].x as i32, self.line[0].y as i32),
-            Point::new(self.line[1].x as i32, self.line[1].y as i32),
+            Point::new(self.line[0].x.round() as i32, self.line[0].y.round() as i32),
+            Point::new(self.line[1].x.round() as i32, self.line[1].y.round() as i32),
         ];
 
         canvas.draw_lines(&line[..]).unwrap();
@@ -168,8 +168,8 @@ impl Entity for Player {
         self.ship_lines.clear();
         for point in &self.ship_points {
             self.ship_lines.push(Point::new(
-                (point.x * cos_theta - point.y * sin_theta + self.position.x) as i32,
-                (point.x * sin_theta + point.y * cos_theta + self.position.y) as i32,
+                (point.x * cos_theta - point.y * sin_theta + self.position.x).round() as i32,
+                (point.x * sin_theta + point.y * cos_theta + self.position.y).round() as i32,
             ));
         }
         self.ship_lines.push(self.ship_lines[0]);
@@ -179,8 +179,8 @@ impl Entity for Player {
             self.fire_lines.clear();
             for point in &self.fire_points {
                 self.fire_lines.push(Point::new(
-                    (point.x * cos_theta - point.y * sin_theta + self.position.x) as i32,
-                    (point.x * sin_theta + point.y * cos_theta + self.position.y) as i32,
+                    (point.x * cos_theta - point.y * sin_theta + self.position.x).round() as i32,
+                    (point.x * sin_theta + point.y * cos_theta + self.position.y).round() as i32,
                 ));
             }
             canvas.draw_lines(&self.fire_lines[..]).unwrap();
