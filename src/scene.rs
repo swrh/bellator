@@ -1,11 +1,15 @@
 use std::time::Duration;
 
+use rand::prelude::*;
+
 use sdl2::keyboard::Keycode;
 use sdl2::render::Canvas;
 use sdl2::video::Window;
 
 use crate::entity::Entity;
 use crate::player::Player;
+use crate::point2f::Point2f;
+use crate::rock::Rock;
 
 pub struct Scene {
     entities: Vec<Box<dyn Entity>>,
@@ -14,7 +18,18 @@ pub struct Scene {
 
 impl Scene {
     pub fn new() -> Result<Scene, String> {
-        let entities: Vec<Box<dyn Entity>> = Vec::new();
+        let mut entities: Vec<Box<dyn Entity>> = Vec::new();
+        entities.reserve_exact(5);
+
+        let mut rng = thread_rng();
+        for _ in 0..entities.capacity() {
+            entities.push(Box::new(Rock::new(
+                        Point2f { x: rng.gen_range(0.0..320.0) + 160.0, y: rng.gen_range(0.0..240.0) + 120.0, },
+                        Point2f { x: rng.gen_range(-0.5..0.5), y: rng.gen_range(-0.5..0.5), },
+                        rng.gen_range(10..20),
+                        rng.gen_range(0.01..0.5),
+                        )));
+        }
 
         let player = Player::new()?;
 
