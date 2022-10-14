@@ -24,7 +24,7 @@ impl Scene {
         let mut rng = thread_rng();
         for _ in 0..entities.capacity() {
             entities.push(Box::new(Rock::new(
-                        Point2f { x: rng.gen_range(0.0..320.0) + 160.0, y: rng.gen_range(0.0..240.0) + 120.0, },
+                        Point2f { x: rng.gen_range(0.0..640.0), y: rng.gen_range(0.0..480.0), },
                         Point2f { x: rng.gen_range(-0.5..0.5), y: rng.gen_range(-0.5..0.5), },
                         rng.gen_range(10..20),
                         rng.gen_range(0.01..0.5),

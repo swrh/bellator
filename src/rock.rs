@@ -55,6 +55,11 @@ impl Entity for Rock {
         self.position.x += self.velocity.x * 0.1 * millis;
         self.position.y += self.velocity.y * 0.1 * millis;
 
+        while self.position.x >= 640.0 { self.position.x -= 640.0; }
+        while self.position.x < 0.0 { self.position.x += 640.0; }
+        while self.position.y >= 480.0 { self.position.y -= 480.0; }
+        while self.position.y < 0.0 { self.position.y += 480.0; }
+
         self.theta += 2. * PI * self.rotation_per_sec * delta.as_secs_f64();
     }
 

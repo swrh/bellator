@@ -152,6 +152,11 @@ impl Entity for Player {
         self.position.x += self.velocity.x * 0.1 * millis;
         self.position.y += self.velocity.y * 0.1 * millis;
 
+        while self.position.x >= 640.0 { self.position.x -= 640.0; }
+        while self.position.x < 0.0 { self.position.x += 640.0; }
+        while self.position.y >= 480.0 { self.position.y -= 480.0; }
+        while self.position.y < 0.0 { self.position.y += 480.0; }
+
         while self.bullets.len() > 0 && (instant - self.bullets.front().unwrap().instant) > Duration::from_secs(5) {
             self.bullets.pop_front();
         }
