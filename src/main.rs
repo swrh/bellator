@@ -1,3 +1,4 @@
+mod controller;
 mod entity;
 mod game;
 mod player;

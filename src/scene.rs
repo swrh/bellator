@@ -6,6 +6,7 @@ use sdl2::keyboard::Keycode;
 use sdl2::render::Canvas;
 use sdl2::video::Window;
 
+use crate::controller::{Button,Controller,HandleButton};
 use crate::entity::Entity;
 use crate::player::Player;
 use crate::point2f::Point2f;
@@ -14,6 +15,7 @@ use crate::rock::Rock;
 pub struct Scene {
     entities: Vec<Box<dyn Entity>>,
     player: Player,
+    controller: Controller,
 }
 
 impl Scene {
@@ -33,21 +35,23 @@ impl Scene {
 
         let player = Player::new()?;
 
+        let mut controller = Controller::new();
+        controller.map(Keycode::Left, Button::Left)?;
+        controller.map(Keycode::Right, Button::Right)?;
+        controller.map(Keycode::Up, Button::Forward)?;
+        controller.map(Keycode::Return, Button::Fire)?;
+
         Ok(Scene {
             entities,
             player,
+            controller,
         })
     }
 
     pub fn handle_key(&mut self, instant: Duration, keycode: Keycode, down: bool) {
-        //println!("handle_key({}, {}, {});", instant.as_millis(), keycode, down);
-        match keycode {
-            Keycode::A | Keycode::Left => self.player.handle_key_left(instant, down),
-            Keycode::D | Keycode::Right => self.player.handle_key_right(instant, down),
-            Keycode::W | Keycode::Up => self.player.handle_key_up(instant, down),
-            Keycode::S | Keycode::Down => self.player.handle_key_down(instant, down),
-            Keycode::Space => self.player.handle_key_space(instant, down),
-            _ => {},
+        match self.controller.get_button(keycode) {
+            Some(button) => self.player.handle_button(instant, button, down),
+            None => {},
         }
     }
 

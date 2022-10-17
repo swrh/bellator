@@ -6,6 +6,7 @@ use sdl2::rect::Point;
 use sdl2::render::Canvas;
 use sdl2::video::Window;
 
+use crate::controller::{Button,ButtonsState,HandleButton};
 use crate::entity::Entity;
 use crate::point2f::Point2f;
 
@@ -58,10 +59,7 @@ pub struct Player {
     theta: f64,
     position: Point2f,
     velocity: Point2f,
-    left: bool,
-    right: bool,
-    up: bool,
-    space: bool,
+    buttons: ButtonsState,
     bullets: VecDeque<Bullet>,
 }
 
@@ -90,6 +88,8 @@ impl Player {
 
         let position = Point2f { x: 100.0, y: 100.0, };
 
+        let buttons = ButtonsState::new();
+
         Ok(Player {
             ship_points,
             ship_lines,
@@ -98,36 +98,21 @@ impl Player {
             theta,
             position,
             velocity: Point2f { x: 0.0, y: 0.0, },
-            left: false,
-            right: false,
-            up: false,
-            space: false,
+            buttons,
             bullets: VecDeque::new(),
         })
     }
+}
 
-    pub fn handle_key_left(&mut self, _instant: Duration, down: bool) {
-        self.left = down;
-    }
-
-    pub fn handle_key_right(&mut self, _instant: Duration, down: bool) {
-        self.right = down;
-    }
-
-    pub fn handle_key_up(&mut self, _instant: Duration, down: bool) {
-        self.up = down;
-    }
-
-    pub fn handle_key_down(&mut self, _instant: Duration, _down: bool) {
-    }
-
-    pub fn handle_key_space(&mut self, instant: Duration, down: bool) {
-        if self.space && !down {
+impl HandleButton for Player {
+    fn handle_button(&mut self, instant: Duration, button: Button, down: bool) {
+        if button == Button::Fire && down {
             let weapon_position = &self.position; // FIXME wrong position: should be the edge of
                                                   // the ship, and not its center
             self.bullets.push_back(Bullet::new(instant, &weapon_position, self.theta));
         }
-        self.space = down;
+
+        self.buttons[button] = down;
     }
 }
 
@@ -135,16 +120,16 @@ impl Entity for Player {
     fn update(&mut self, instant: Duration, delta: Duration) {
         let millis = delta.as_millis() as f64;
 
-        if self.left != self.right {
+        if self.buttons[Button::Left] != self.buttons[Button::Right] {
             let shift = PI * 0.001 * millis;
-            if self.left {
+            if self.buttons[Button::Left] {
                 self.theta -= shift;
             } else {
                 self.theta += shift;
             }
         }
 
-        if self.up {
+        if self.buttons[Button::Forward] {
             self.velocity.x += self.theta.sin() * 0.001 * millis;
             self.velocity.y -= self.theta.cos() * 0.001 * millis;
         }
@@ -180,7 +165,7 @@ impl Entity for Player {
         self.ship_lines.push(self.ship_lines[0]);
         canvas.draw_lines(&self.ship_lines[..]).unwrap();
 
-        if self.up {
+        if self.buttons[Button::Forward] {
             self.fire_lines.clear();
             for point in &self.fire_points {
                 self.fire_lines.push(Point::new(
