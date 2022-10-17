@@ -36,6 +36,12 @@ impl Scene {
         let player = Player::new()?;
 
         let mut controller = Controller::new();
+
+        controller.map(Keycode::A, Button::Left)?;
+        controller.map(Keycode::D, Button::Right)?;
+        controller.map(Keycode::W, Button::Forward)?;
+        controller.map(Keycode::Space, Button::Fire)?;
+
         controller.map(Keycode::Left, Button::Left)?;
         controller.map(Keycode::Right, Button::Right)?;
         controller.map(Keycode::Up, Button::Forward)?;
