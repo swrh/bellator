@@ -1,3 +1,4 @@
+mod bullet;
 mod controller;
 mod entity;
 mod game;
