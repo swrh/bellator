@@ -77,4 +77,42 @@ impl Entity for Rock {
         self.lines.push(self.lines[0]);
         canvas.draw_lines(&self.lines[..]).unwrap();
     }
+
+    fn collides_with(&self, that: &Vec<Point2f>) -> bool {
+        let sin_theta = self.theta.sin();
+        let cos_theta = self.theta.cos();
+
+        for i in 0..self.points.len() {
+            let j = (i + 1) % self.points.len();
+
+            let a = &self.points[i];
+            let b = &self.points[j];
+
+            let this = [
+                Point2f {
+                    x: a.x * cos_theta - a.y * sin_theta + self.position.x,
+                    y: a.x * sin_theta + a.y * cos_theta + self.position.y,
+                },
+                Point2f {
+                    x: b.x * cos_theta - b.y * sin_theta + self.position.x,
+                    y: b.x * sin_theta + b.y * cos_theta + self.position.y,
+                },
+            ];
+
+            // Return true if both lines intersect
+            let s1_x = this[1].x - this[0].x;
+            let s1_y = this[1].y - this[0].y;
+            let s2_x = that[1].x - that[0].x;
+            let s2_y = that[1].y - that[0].y;
+
+            let s = (-s1_y * (this[0].x - that[0].x) + s1_x * (this[0].y - that[0].y)) / (-s2_x * s1_y + s1_x * s2_y);
+            let t = ( s2_x * (this[0].y - that[0].y) - s2_y * (this[0].x - that[0].x)) / (-s2_x * s1_y + s1_x * s2_y);
+
+            if s >= 0.0 && s <= 1.0 && t >= 0.0 && t <= 1.0 {
+                return true;
+            }
+        }
+
+        false
+    }
 }

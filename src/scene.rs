@@ -67,6 +67,18 @@ impl Scene {
         }
 
         self.player.update(instant, delta);
+
+        let mut to_remove = Vec::new();
+        for i in 0..self.player.bullets().len() {
+            let b = &self.player.bullets()[i];
+            for e in &self.entities {
+                if e.collides_with(b.line()) {
+                    to_remove.push(i);
+                    break;
+                }
+            }
+        }
+        self.player.remove_bullets(&mut to_remove);
     }
 
     pub fn render(&mut self, canvas: &mut Canvas<Window>) {

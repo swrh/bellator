@@ -10,13 +10,13 @@ use crate::point2f::Point2f;
 
 pub struct Bullet {
     instant: Duration,
-    line: [Point2f; 2],
+    line: Vec<Point2f>,
     theta: f64,
 }
 
 impl Bullet {
     pub fn new(instant: Duration, position: &Point2f, theta: f64) -> Bullet {
-        let line = [
+        let line = vec![
             Point2f { x: position.x, y: position.y, },
             Point2f { x: position.x + theta.sin() * 5.0, y: position.y - theta.cos() * 5.0, },
         ];
@@ -31,15 +31,19 @@ impl Bullet {
     pub fn instant(&self) -> Duration {
         self.instant
     }
+
+    pub fn line(&self) -> &Vec<Point2f> {
+        &self.line
+    }
 }
 
 impl Entity for Bullet {
     fn update(&mut self, _instant: Duration, delta: Duration) {
         let millis = delta.as_millis() as f64;
 
-        for line in &mut self.line {
-            line.x += self.theta.sin() * 0.5 * millis;
-            line.y -= self.theta.cos() * 0.5 * millis;
+        for p in &mut self.line {
+            p.x += self.theta.sin() * 0.5 * millis;
+            p.y -= self.theta.cos() * 0.5 * millis;
         }
     }
 
@@ -50,5 +54,9 @@ impl Entity for Bullet {
         ];
 
         canvas.draw_lines(&line[..]).unwrap();
+    }
+
+    fn collides_with(&self, _line: &Vec<Point2f>) -> bool {
+        todo!("Bullet::collides_with")
     }
 }

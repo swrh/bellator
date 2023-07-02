@@ -12,7 +12,7 @@ use crate::entity::Entity;
 use crate::point2f::Point2f;
 
 pub struct Player {
-    ship_points: [Point2f; 4],
+    ship_points: Vec<Point2f>,
     ship_lines: Vec<Point>,
     fire_points: [Point2f; 3],
     fire_lines: Vec<Point>,
@@ -25,7 +25,7 @@ pub struct Player {
 
 impl Player {
     pub fn new() -> Result<Player, String> {
-        let ship_points = [
+        let ship_points = vec![
             Point2f { x: 0.0, y: -20.0, },
             Point2f { x: -10.0, y: 10.0, },
             Point2f { x: 0.0, y: 5.0, },
@@ -61,6 +61,17 @@ impl Player {
             buttons,
             bullets: VecDeque::new(),
         })
+    }
+
+    pub fn bullets(&self) -> &VecDeque<Bullet> {
+        &self.bullets
+    }
+
+    pub fn remove_bullets(&mut self, bullets: &mut [usize]) {
+        bullets.sort_unstable_by(|a, b| b.cmp(a));
+        for i in bullets {
+            self.bullets.remove(*i);
+        }
     }
 }
 
@@ -139,5 +150,9 @@ impl Entity for Player {
         for bullet in &mut self.bullets {
             bullet.render(canvas);
         }
+    }
+
+    fn collides_with(&self, _line: &Vec<Point2f>) -> bool {
+        todo!("Player::collides_with")
     }
 }
