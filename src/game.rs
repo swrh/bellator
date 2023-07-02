@@ -45,8 +45,6 @@ impl Game {
     }
 
     pub fn run(&mut self) -> Result<(), String> {
-        println!("Hello, world!");
-
         let mut event_pump = self.sdl_context.event_pump()?;
 
         let update_interval = Duration::from_millis(10);
@@ -97,8 +95,6 @@ impl Game {
             current_time = Instant::now() - current_time_offset;
 
         }
-
-        println!("Goodbye, world.");
 
         Ok(())
     }
